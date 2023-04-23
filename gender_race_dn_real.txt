@@ -1,0 +1,1 @@
+{'white': 6, 'latino hispanic': 1, 'middle eastern': 1, 'asian': 1}{'Woman': 4, 'Man': 5}Bad count Real : 0

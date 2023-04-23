@@ -3,6 +3,8 @@ import cv2
 import matplotlib.pyplot as plt
 from deepface import DeepFace
 import os
+import json
+
 # loading image
 img = cv2.imread(
     r"C:\Users\Eric-DQGM\Downloads\MLProject\IDS705_ML_Team9\T9-Val\Fake\Fake35.png"
@@ -21,13 +23,34 @@ race_dictionary_real = {}
 gender_dictionary_real = {}
 bad_count_real = 0
 # Looping through the faces in the folders
-c = 0
-for image in os.listdir(
-    r"C:\Users\Eric-DQGM\Downloads\MLProject\IDS705_ML_Team9\T9-140KRGB\Real"
-):  
-    c += 1
+pics_passed = set()
+
+flag = "Laptop"
+
+if flag == "DQ-GM":
+    real_path = (
+        r"C:\Users\Eric-DQGM\Downloads\MLProject\IDS705_ML_Team9\T9-140KRGB\Real"
+    )
+    fake_path = (
+        r"C:\Users\Eric-DQGM\Downloads\MLProject\IDS705_ML_Team9\T9-140KRGB\Fake"
+    )
+
+elif flag == "Laptop":
+    real_path = (
+        r"C:\Users\ericr\Documents\IDS705\Classifying-ethnicity\T9-Misc140KRGB\Real"
+    )
+    fake_path = (
+        r"C:\Users\ericr\Documents\IDS705\Classifying-ethnicity\T9-Misc140KRGB\Fake"
+    )
+
+else:
+    print("Error: flag not set")
+
+cap = 10
+count = 1
+for image in os.listdir(real_path):
     print(image)
-    path = r"C:\Users\Eric-DQGM\Downloads\MLProject\IDS705_ML_Team9\T9-140KRGB\Real"
+    path = real_path
     # join the path and filename
     file_path = os.path.join(path, image)
     # print(file_path)
@@ -56,24 +79,36 @@ for image in os.listdir(
     else:
         gender_dictionary_real[gender] += 1
 
-# write gender_dictionary_real to a txt file
+    # saving results to a txt file
 
-with open("gender_race_dn_real.txt", "w") as f:
+    pics_passed.add(image)
 
-    f.write(f"{race_dictionary_real}")
-    f.write(f"{gender_dictionary_real}")
-    f.write(f"{bad_count_real}")
+    with open("pics_passed.txt", "w") as f:
+        f.write(f"{pics_passed}")
+
+    # write gender_dictionary_real to a txt file
+
+    with open("gender_race_dn_real.txt", "w") as f:
+        f.write(f"{race_dictionary_real}")
+        f.write(f"{gender_dictionary_real}")
+        f.write(f"Bad count Real : {bad_count_real}")
+
+    with open("sample{count}.json", "w") as outfile:
+        json.dump(gender_dictionary_real, outfile)
+
+    count += 1
+
+    if count == cap:
+        break
 
 
 race_dictionary_fake = {}
 gender_dictionary_fake = {}
 bad_count_fake = 0
 
-for image in os.listdir(
-    r"C:\Users\Eric-DQGM\Downloads\MLProject\IDS705_ML_Team9\T9-140KRGB\Fake"
-):
+for image in os.listdir(fake_path):
     print(image)
-    path = r"C:\Users\Eric-DQGM\Downloads\MLProject\IDS705_ML_Team9\T9-140KRGB\Fake"
+    path = fake_path
     # join the path and filename
     file_path = os.path.join(path, image)
     img = cv2.imread(file_path)  # loading image
@@ -105,7 +140,6 @@ for image in os.listdir(
 
 
 with open("gender_race_dn_fake.txt", "w") as f:
-
     f.write(f"{race_dictionary_fake}")
     f.write(f"{gender_dictionary_fake}")
-    f.write(f"{bad_count_fake}")
+    f.write(f"Bad count Fake: {bad_count_fake}")
